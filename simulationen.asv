@@ -1,0 +1,123 @@
+m = 2.5;      % Masse
+l = 12.5;     % Länge
+d = 1.5;      % Dämpfungskonstante
+g = 9.81;     % Fallbeschleunigung
+
+phi_r = deg2rad(125);     % Ruhelage in Rad
+phi_0 = deg2rad(25);      % Anfangsauslenkung relativ zu phi_r in Rad
+x_d_0 = 0;                % Anfangsgeschwindigkeit
+
+M_A_r = l*m*g*sin(phi_r); % Haltemoment für phi_r
+
+D = 0.45;
+k_v = (l*d)^2/(4*m*D^2) - g*m*l*cos(phi_r);
+
+f = 50;             % Frequenz in Hz
+dt = 1/f;           % Euler-Schritt in s
+t_end = 20;         % Simulationszeit in s
+t = 0:dt:t_end;     % Vektor der Zeitstamps, Länge t_end
+N = length(t);
+
+x_ungeregelt = zeros(2,N);          % nichtlinear ungeregelt
+x_geregelt = zeros(2,N);            % nichtlinear geregelt
+
+delta_x_ungeregelt = zeros(2,N);    % linear ungeregelt
+delta_x_geregelt = zeros(2,N);      % linear geregelt
+
+% Für nicht lineares System gilt absolute Auslenkung
+x_ungeregelt(:,1) = [phi_r + phi_0; x_d_0];
+x_geregelt(:,1)   = [phi_r + phi_0; x_d_0];
+
+% Für linearisiertes System --- Abweichung vom Arbeitspunkt
+delta_x_ungeregelt(:,1) = [phi_0; x_d_0];
+delta_x_geregelt(:,1)   = [phi_0; x_d_0];
+
+%% Euler-Verfahren
+
+for i = 2:N
+
+    % Nichtlinear ungeregelt
+    x_ungeregelt(:,i) = x_ungeregelt(:,i-1) ...
+        + dt * Pendel(x_ungeregelt(:,i-1), m, l, d, g, M_A_r);
+
+    % Nichtlinear geregelt
+    x_geregelt(:,i) = x_geregelt(:,i-1) ...
+        + dt * Pendel_geregelt(x_geregelt(:,i-1), m, l, d, g, phi_r, M_A_r, k_v);
+
+    % Linearisiert ungeregelt
+    delta_x_ungeregelt(:,i) = delta_x_ungeregelt(:,i-1) ...
+        + dt * Pendel_lin(delta_x_ungeregelt(:,i-1), m, l, d, g, phi_r);
+
+    % Linearisiert geregelt
+    delta_x_geregelt(:,i) = delta_x_geregelt(:,i-1) ...
+        + dt * Pendel_lin_geregelt(delta_x_geregelt(:,i-1), m, l, d, g, phi_r, k_v);
+
+end
+
+function F = Pendel(x, m, l, d, g, M_A_r)
+
+    phi = x(1); 
+    phi_dot = x(2);
+
+    M_A = M_A_r;  
+
+    F = zeros(2,1);
+
+    F(1) = phi_dot;
+    F(2) = (1/(m*l^2))*M_A ...
+           - (d/m)*phi_dot ...
+           - (g/l)*sin(phi);
+
+end
+
+function F = Pendel_geregelt(x, m, l, d, g, phi_r, M_A_r, k_v)
+
+    phi = x(1);
+    phi_dot = x(2);
+
+    % Regeldifferenz bezogen auf phi_r
+    delta_u = -k_v*(phi - phi_r);
+
+    % gesamtes Motormoment
+    M_A = M_A_r + delta_u;
+
+    F = zeros(2,1);
+
+    F(1) = phi_dot;
+    F(2) = (1/(m*l^2))*M_A ...
+           - (d/m)*phi_dot ...
+           - (g/l)*sin(phi);
+
+end
+
+function F = Pendel_lin(delta_x, m, l, d, g, phi_r)
+
+    A = [0, 1;
+        -(g/l)*cos(phi_r), -d/m];
+
+    B = [0;
+         1/(m*l^2)];
+
+    delta_u = 0;
+
+    F = A*delta_x + B*delta_u;
+
+end
+
+
+function F = Pendel_lin_geregelt(delta_x, m, l, d, g, phi_r, k_v)
+
+    A = [0, 1;
+        -(g/l)*cos(phi_r), -d/m];
+
+    B = [0;
+         1/(m*l^2)];
+
+    C = [1, 0];
+
+    % delta_u = -k_v * delta_phi
+    delta_u = -k_v*C*delta_x;
+
+    F = A*delta_x + B*delta_u;
+
+end
