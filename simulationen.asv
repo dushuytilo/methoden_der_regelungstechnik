@@ -70,7 +70,7 @@ delta_x_geregelt = Euler_Verfahren(modell_Pendel_lin_geregelt, t, x0_linear);
 % Quelle: https://www.cfm.brown.edu/people/dobrush/am33/Matlab/ch3/RK4.html
 % linearisertes geregeltes System mit Euler und Runge Kutta 4 (RK4)
 % für verschiedene Schrittweiten
-% Delta t = 0.1 s (gegeben)
+% Delta t = 0.1 s
 dt_01 = 0.1;
 t_01 = 0:dt_01:t_end;
 delta_x_euler_01 = Euler_Verfahren(modell_Pendel_lin_geregelt, t_01, x0_linear);
@@ -102,7 +102,7 @@ M_A_rk4_3   = M_A_r + delta_u_rk4_3;
 
 %% Zusätzliche Zeitschriten
 
-% Delta t =  0.3s (Zusatz, deutlich unter der Stabilitätsgrenze)
+% Delta t =  0.3s (ist da ein Fehler in der aufgabenstellung?)
 dt_5 = 0.3;
 t_5 = 0:dt_5:t_end;
 delta_x_euler_5 = Euler_Verfahren(modell_Pendel_lin_geregelt, t_5, x0_linear);
@@ -112,7 +112,7 @@ delta_u_rk4_5   = -k_v * delta_x_rk4_5(1,:);
 M_A_euler_5 = M_A_r + delta_u_euler_5;
 M_A_rk4_5   = M_A_r + delta_u_rk4_5;
 
-% Delta t = 1 s (etwas unter der gerechneten Stabilitätsgrenze)
+% Delta t = 1 s (unter der gerechneten Stabilitätsgrenze)
 dt_6 = 1.0;
 t_6 = 0:dt_6:t_end;
 delta_x_euler_6 = Euler_Verfahren(modell_Pendel_lin_geregelt, t_6, x0_linear);
@@ -122,7 +122,7 @@ delta_u_rk4_6   = -k_v * delta_x_rk4_6(1,:);
 M_A_euler_6 = M_A_r + delta_u_euler_6;
 M_A_rk4_6   = M_A_r + delta_u_rk4_6;
 
-% Delta t = 1.3s (nah an der Stabilitätsgrenze)
+% Delta t = 1.3s (näher an die Stabilitätsgrenze)
 dt_7 = 1.3;
 t_7 = 0:dt_7:t_end;
 delta_x_euler_7 = Euler_Verfahren(modell_Pendel_lin_geregelt, t_7, x0_linear);
