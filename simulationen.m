@@ -168,6 +168,8 @@ plot(t, rad2deg(x_ungeregelt(1,:)), 'LineWidth', 1.2, 'Color', 'black');
 hold on;
 plot(t, rad2deg(phi_lin_ungeregelt), 'LineWidth', 1.2);
 grid on;
+ylim([0 2000])
+xlim([0 25])
 xlabel('$t$ [s]');
 ylabel('$\varphi$ [$^\circ$]');
 legend('nichtlinear', 'linearisiert', 'Location', 'best');
@@ -178,6 +180,9 @@ plot(t, rad2deg(x_ungeregelt(2,:)), 'LineWidth', 1.2, 'Color', 'black');
 hold on;
 plot(t, rad2deg(phi_dot_lin_ungeregelt), 'LineWidth', 1.2);
 grid on;
+
+ylim([0 360])
+xlim([0 25])
 xlabel('$t$ [s]');
 ylabel('$\dot{\varphi}$ [$^\circ$/s]');
 legend('nichtlinear', 'linearisiert', 'Location', 'best');
@@ -188,6 +193,7 @@ plot(t, M_A_ungeregelt, 'LineWidth', 1.2, 'Color', 'black');
 hold on;
 plot(t, M_A_lin_ungeregelt, 'LineWidth', 1.2);
 grid on;
+xlim([0 25])
 xlabel('$t$ [s]');
 ylabel('$M_A$ [Nm]');
 legend('nichtlinear', 'linearisiert', 'Location', 'best');
@@ -341,7 +347,6 @@ plot(t_5, M_A_rk4_5, 'LineWidth', 1.2);
 grid on;
 xlabel('$t$ [s]');
 ylabel('$M_A$ [Nm]');
-
 
 % dt = 1.0 s
 subplot(3,3,2);
